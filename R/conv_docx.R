@@ -12,8 +12,6 @@
 #'
 #' @return Nothing
 #' @export
-
-#' @import RDCOMClient
 #' @importFrom gWidgets2 gfile
 #' @importFrom parallel makeCluster parLapplyLB stopCluster
 #' @importFrom stringi stri_conv stri_enc_toascii
@@ -52,27 +50,31 @@ convDoc2Docx <- function(files=NULL, delete.original=FALSE, use.parallel=TRUE){
                 "Please rectify it before continue processing.")
     
     if (any(file.exists(files))){
-        wdApp <- COMCreate("Word.Application")
-        convDoc <- cmpfun(function(file){
-            doc <- wdApp[["Documents"]]$Open(file)
-            doc$SaveAs(str_replace(file, "doc$", "docx"), 12)  # wdFormatXMLDocument = 12
-            doc$Close()
-        })
+        if (Sys.info()['sysname'] == "Windows"){
+            wdApp <- RDCOMClient::COMCreate("Word.Application")
+            convDoc <- cmpfun(function(file){
+                doc <- wdApp[["Documents"]]$Open(file)
+                doc$SaveAs(str_replace(file, "doc$", "docx"), 12)  
+                # wdFormatXMLDocument = 12
+                doc$Close()
+            })
         
-        if (length(files) > 50 && use.parallel){
-            ## parallel computation
-            cl <- makeCluster(detectCores(
-                logical=! Sys.info()[["sysname"]] == "Windows"))
-            # clusterExport(cl, "convDoc", envir=environment())
-            created <- parLapplyLB(cl, files, convDoc)
-            # stopImplicitCluster()
-            stopCluster(cl)
-        }else{
-            created <- lapply(files, convDoc)
+            if (length(files) > 50 && use.parallel){
+                ## parallel computation
+                cl <- makeCluster(detectCores(
+                    logical=! Sys.info()[["sysname"]] == "Windows"))
+                # clusterExport(cl, "convDoc", envir=environment())
+                created <- parLapplyLB(cl, files, convDoc)
+                # stopImplicitCluster()
+                stopCluster(cl)
+            }else{
+                created <- lapply(files, convDoc)
+            }
+            
+            wdApp$Quit()
+            wdApp <- NULL
         }
         
-        wdApp$Quit()
-        wdApp <- NULL
         if (delete.original) unlink(files)
         invisible(paste("A total of", seq_len(length(files)), "files conversed!",
                         ifelse(delete.original, "\nOriginal xls files are deleted.",
