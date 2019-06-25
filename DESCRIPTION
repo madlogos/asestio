@@ -1,0 +1,35 @@
+Package: asestio
+Type: Package
+Title: ASES Analytic Toolkit on Data I/O and Transformation
+Version: 0.1.0
+Author: Yiying Wang <wangy@aetna.com>
+Maintainer: Yiying Wang <wangy@aetna.com>
+Contributor: Shanshan Zou <zous@aetna.com>
+Description: This package contains frequently used tool functions on data I/O 
+    and transformation for ASES, e.g., PDF extraction, txt merging, HTML heading
+	reformat, ...
+License: GPL
+Encoding: UTF-8
+LazyData: true
+Imports:
+    aseskit,
+	cellranger,
+	compiler,
+	doParallel,
+	dplyr,
+	foreach,
+	gWidgets2,
+	knitr,
+	openxlsx,
+	parallel,
+	readr,
+	readxl,
+	rio,
+	stringi,
+	stringr
+RoxygenNote: 6.1.1
+Suggests: 
+    RDCOMClient,
+    testthat,
+    vdiffr
+	

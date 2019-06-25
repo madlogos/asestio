@@ -1,1 +1,3 @@
 # asestio
+
+This package contains frequently used tool functions on data I/O and transformation for ASES, e.g., PDF extraction, txt merging, HTML heading reformat, ...
